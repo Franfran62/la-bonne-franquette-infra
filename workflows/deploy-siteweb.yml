@@ -1,0 +1,36 @@
+name: Deploy siteweb
+author: François Kukla
+
+on:
+  repository_dispatch:
+    types: [deploy-siteweb]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Déployer sur le serveur
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+
+            # Mise à jour de l'environnement
+            SITEWEB_VERSION=${{ github.event.client_payload.version }}
+            REGISTRY_USER=${{ secrets.REGISTRY_USER }}
+
+            # Pull la nouvelle image 
+            docker login ghcr.io --username ${{ secrets.REGISTRY_USER }} --password ${{ secrets.REGISTRY_TOKEN }}
+            docker pull ghcr.io/${{ secrets.REGISTRY_USER }}/siteweb:$SITEWEB_VERSION
+
+            # Stop et supprime le conteneur existant
+            docker stop siteweb || true
+            docker rm   siteweb || true
+
+            # déploiement du siteweb
+            cd /opt/labonnefranquette
+            export SITEWEB_VERSION REGISTRY_USER
+            docker-compose up -d siteweb
