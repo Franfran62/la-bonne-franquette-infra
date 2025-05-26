@@ -30,6 +30,6 @@ jobs:
             docker rm   siteweb || true
 
             # déploiement du siteweb
-            cd /opt/labonnefranquette
+            cd /opt/labonnefranquette/la-bonne-franquette-infra
             export SITEWEB_VERSION REGISTRY_USER
-            docker-compose up -d siteweb
+            docker compose up -d siteweb
