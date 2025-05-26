@@ -1,5 +1,4 @@
 name: Deploy siteweb
-author: François Kukla
 
 on:
   repository_dispatch:
