@@ -19,8 +19,22 @@ services:
        - "3306:3306"
     networks:
       - web
-
-  # Il faudra l'api
+  # ------------------------
+  # API
+  # ------------------------
+  lbfapi: 
+    container_name: lbfapi
+    image: ghcr.io/${REGISTRY_USER_API}/lbfapi:${API_VERSION}
+    restart: unless-stopped
+    env_file: .env
+    ports: 
+      - "8081:8081"
+    environment: 
+      - SPRING_DATASOURCE_URL=${DATABASE_URL}
+      - SPRING_DATASOURCE_USERNAME=${BDD_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${BDD_PASSWORD}
+    networks: 
+      - web
 
   # ------------------------
   # SiteWeb et Dashboard
