@@ -1,0 +1,35 @@
+name: Deploy api
+
+on:
+  repository_dispatch:
+    types: [deploy-api]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Déployer sur le serveur
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+
+            # Mise à jour de l'environnement
+            API_VERSION=${{ github.event.client_payload.version }}
+            REGISTRY_USER_API=${{ secrets.REGISTRY_USER_API }}
+
+            # Pull la nouvelle image 
+            docker login ghcr.io --username ${{ secrets.REGISTRY_USER_API }} --password ${{ secrets.REGISTRY_TOKEN_API }}
+            docker pull ghcr.io/${{ secrets.REGISTRY_USER_API }}/lbfapi:$API_VERSION
+
+            # Stop et supprime le conteneur existant
+            docker stop lbfapi || true
+            docker rm   lbfapi || true
+
+            # déploiement du siteweb
+            cd /opt/labonnefranquette/la-bonne-franquette-infra
+            export API_VERSION REGISTRY_USER_API
+            docker compose up -d lbfapi
