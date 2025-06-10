@@ -1,6 +1,27 @@
 services:
 
   # ------------------------
+  # La base de données
+  # ------------------------
+  db:
+    container_name: db
+    image: mysql:latest
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+       - "3306:3306"
+    networks:
+      - web
+
+  # Il faudra l'api
+
+  # ------------------------
   # SiteWeb et Dashboard
   # ------------------------
   siteweb:
@@ -15,5 +36,9 @@ services:
 networks:
   web:
     driver: bridge
+
+volumes:
+  db_data:
+    driver: local
 
 
