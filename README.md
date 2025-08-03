@@ -1,4 +1,4 @@
-#la-bonne-franquette-infra
+# la-bonne-franquette-infra
 
 Gestion de l'infrastructure et du CI/CD de La bonne Franquette.
 
